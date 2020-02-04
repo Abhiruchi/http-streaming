@@ -244,15 +244,15 @@ export const onError = {
     videojs.log.warn('Problem encountered loading the subtitle track.' +
                      'Disabling subtitle track.');
 
-    stopLoaders(segmentLoader, mediaType);
+    //stopLoaders(segmentLoader, mediaType);
 
     const track = mediaType.activeTrack();
 
     if (track) {
-      track.mode = 'disabled';
+      //track.mode = 'disabled';
     }
 
-    mediaType.onTrackChanged();
+    //mediaType.onTrackChanged();
   }
 };
 
@@ -487,9 +487,11 @@ export const initialize = {
         let playlistLoader;
 
         if (sourceType === 'hls') {
+          console.log("source type is hls");
           playlistLoader =
             new PlaylistLoader(properties.resolvedUri, hls, requestOptions);
         } else if (sourceType === 'dash') {
+          console.log("source type si dash");
           playlistLoader = new DashPlaylistLoader(
             properties.playlists[0],
             hls,
@@ -667,6 +669,7 @@ export const activeTrack = {
 
     for (const id in tracks) {
       if (tracks[id].mode === 'showing') {
+        console.log("active track  " +   tracks[id] + "out of all " + tracks);
         return tracks[id];
       }
     }

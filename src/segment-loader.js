@@ -100,6 +100,14 @@ const segmentInfoString = (segmentInfo) => {
     timeline
   } = segmentInfo;
 
+  console.log("SEGMENT INFO - " + [
+    `appending [${index}] of [${seq}, ${seq + segments.length}] from playlist [${id}]`,
+    `[${start} => ${end}] in timeline [${timeline}]`
+  ].join(' '));
+
+  console.log(segmentInfo);
+
+  
   return [
     `appending [${index}] of [${seq}, ${seq + segments.length}] from playlist [${id}]`,
     `[${start} => ${end}] in timeline [${timeline}]`
@@ -657,6 +665,7 @@ export default class SegmentLoader extends videojs.EventTarget {
       audio: true,
       video: true
     };
+    console.log("Segloader RESET EVERYTHIN!!!");
     this.resetLoader();
     this.remove(0, this.duration_(), done);
 
@@ -834,11 +843,12 @@ export default class SegmentLoader extends videojs.EventTarget {
       // should often be correct, it's better to rely on the buffered end, as the new
       // content post discontinuity should line up with the buffered end as if it were
       // time 0 for the new content.
-      segmentInfo.timestampOffset =
-        buffered.length ? buffered.end(buffered.length - 1) : segmentInfo.startOfSegment;
-      if (this.captionParser_) {
-        this.captionParser_.clearAllCaptions();
-      }
+      console.log("Segloader: CLEAR ALL CAPTIONS");
+      // segmentInfo.timestampOffset =
+      //   buffered.length ? buffered.end(buffered.length - 1) : segmentInfo.startOfSegment;
+      // if (this.captionParser_) {
+      //   this.captionParser_.clearAllCaptions();
+      // }
     }
 
     this.loadSegment_(segmentInfo);
@@ -1243,6 +1253,8 @@ export default class SegmentLoader extends videojs.EventTarget {
       return;
     }
 
+    console.log("HANDLE CAPTIONS!!");
+
     const segmentInfo = this.pendingSegment_;
 
     // Wait until we have some video data so that caption timing
@@ -1280,6 +1292,8 @@ export default class SegmentLoader extends videojs.EventTarget {
     Object.keys(captionTracks).forEach((trackName) => {
       const {startTime, endTime, captions} = captionTracks[trackName];
       const inbandTextTracks = this.inbandTextTracks_;
+
+      console.log("adding cues from" + startTime +  "->" +  endTime + " for " + trackName + "captions = " + captions);
 
       this.logger_(`adding cues from ${startTime} -> ${endTime} for ${trackName}`);
 
@@ -1848,11 +1862,13 @@ export default class SegmentLoader extends videojs.EventTarget {
 
     const isEndOfStream = this.isEndOfStream_(segmentInfo.mediaIndex, segmentInfo.playlist);
     const isWalkingForward = this.mediaIndex !== null;
-    const isDiscontinuity = segmentInfo.timeline !== this.currentTimeline_ &&
+    const isDiscontinuity = false;
+
+    //segmentInfo.timeline !== this.currentTimeline_ &&
       // TODO verify this behavior
       // currentTimeline starts at -1, but we shouldn't end the timeline switching to 0,
       // the first timeline
-      segmentInfo.timeline > 0;
+    //  segmentInfo.timeline > 0;
 
     if (!segmentInfo.isFmp4 &&
         (isEndOfStream || (isWalkingForward && isDiscontinuity))) {

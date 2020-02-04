@@ -1089,6 +1089,7 @@ export class MasterPlaylistController extends videojs.EventTarget {
     }
 
     if (this.mediaSource.duration !== duration) {
+      console.log("setting duration = " + duration)
       this.sourceUpdater_.setDuration(duration);
     }
   }
@@ -1295,6 +1296,8 @@ export class MasterPlaylistController extends videojs.EventTarget {
 
     if (seekable.length) {
       offset = seekable.start(0);
+      console.log("UPDATE AD CUES");
+      console.log(offset)
     }
 
     updateAdCues(media, this.cueTagsTrack_, offset);

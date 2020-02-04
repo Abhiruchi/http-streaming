@@ -100,43 +100,51 @@ export const syncPointStrategies = [
   },
   // Stategy "Discontinuity": We have a discontinuity with a known
   //                          display-time
-  {
-    name: 'Discontinuity',
-    run: (syncController, playlist, duration, currentTimeline, currentTime) => {
-      let syncPoint = null;
+  // {
+  //   name: 'Discontinuity',
+  //   run: (syncController, playlist, duration, currentTimeline, currentTime) => {
+  //     let syncPoint = null;
 
-      currentTime = currentTime || 0;
+  //     currentTime = currentTime || 0;
+  //     console.log("Discontinuity" + currentTime + " starts and discontinuities at = " + playlist.discontinuityStarts);
 
-      if (playlist.discontinuityStarts && playlist.discontinuityStarts.length) {
-        let lastDistance = null;
+  //     if (playlist.discontinuityStarts && playlist.discontinuityStarts.length) {
+  //       let lastDistance = null;
 
-        for (let i = 0; i < playlist.discontinuityStarts.length; i++) {
-          const segmentIndex = playlist.discontinuityStarts[i];
-          const discontinuity = playlist.discontinuitySequence + i + 1;
-          const discontinuitySync = syncController.discontinuities[discontinuity];
+  //       for (let i = 0; i < playlist.discontinuityStarts.length; i++) {
+  //         const segmentIndex = playlist.discontinuityStarts[i];
+  //         const discontinuity = playlist.discontinuitySequence + i + 1;
+  //         const discontinuitySync = syncController.discontinuities[discontinuity];
 
-          if (discontinuitySync) {
-            const distance = Math.abs(currentTime - discontinuitySync.time);
+  //         if (discontinuitySync) {
+  //           const distance = Math.abs(currentTime - discontinuitySync.time);
 
-            // Once the distance begins to increase, we have passed
-            // currentTime and can stop looking for better candidates
-            if (lastDistance !== null && lastDistance < distance) {
-              break;
-            }
+  //           // Once the distance begins to increase, we have passed
+  //           // currentTime and can stop looking for better candidates
+  //           if (lastDistance !== null && lastDistance < distance) {
+  //             break;
+  //           }
 
-            if (!syncPoint || lastDistance === null || lastDistance >= distance) {
-              lastDistance = distance;
-              syncPoint = {
-                time: discontinuitySync.time,
-                segmentIndex
-              };
-            }
-          }
-        }
-      }
-      return syncPoint;
-    }
-  },
+  //           console.log("distance distance = " + distance + " for segment index" + segmentIndex + "  dis sync " + discontinuitySync)
+
+  //           if (!syncPoint || lastDistance === null || lastDistance >= distance) {
+  //             lastDistance = distance;
+  //             console.log("syncing to time and index = " + discontinuitySync.time + " " + segmentIndex);
+  //             syncPoint = {
+  //               time: discontinuitySync.time,
+  //               segmentIndex
+  //             };
+  //           }
+  //         }
+  //       }
+  //     }
+      
+
+  //     console.log(syncPoint);
+
+  //     return syncPoint;
+  //   }
+  // },
   // Stategy "Playlist": We have a playlist with a known mapping of
   //                     segment index to display time
   {
@@ -369,7 +377,7 @@ export default class SyncController extends videojs.EventTarget {
 
   saveSegmentTimingInfo(segmentInfo) {
     if (this.calculateSegmentTimeMapping_(segmentInfo, segmentInfo.timingInfo)) {
-      this.saveDiscontinuitySyncInfo_(segmentInfo);
+      //this.saveDiscontinuitySyncInfo_(segmentInfo);
 
       // If the playlist does not have sync information yet, record that information
       // now with segment timing information
@@ -443,51 +451,51 @@ export default class SyncController extends videojs.EventTarget {
    * @private
    * @param {SegmentInfo} segmentInfo - The current active request information
    */
-  saveDiscontinuitySyncInfo_(segmentInfo) {
-    const playlist = segmentInfo.playlist;
-    const segment = segmentInfo.segment;
+  // saveDiscontinuitySyncInfo_(segmentInfo) {
+  //   const playlist = segmentInfo.playlist;
+  //   const segment = segmentInfo.segment;
 
-    // If the current segment is a discontinuity then we know exactly where
-    // the start of the range and it's accuracy is 0 (greater accuracy values
-    // mean more approximation)
-    if (segment.discontinuity) {
-      this.discontinuities[segment.timeline] = {
-        time: segment.start,
-        accuracy: 0
-      };
-    } else if (playlist.discontinuityStarts && playlist.discontinuityStarts.length) {
-      // Search for future discontinuities that we can provide better timing
-      // information for and save that information for sync purposes
-      for (let i = 0; i < playlist.discontinuityStarts.length; i++) {
-        const segmentIndex = playlist.discontinuityStarts[i];
-        const discontinuity = playlist.discontinuitySequence + i + 1;
-        const mediaIndexDiff = segmentIndex - segmentInfo.mediaIndex;
-        const accuracy = Math.abs(mediaIndexDiff);
+  //   // If the current segment is a discontinuity then we know exactly where
+  //   // the start of the range and it's accuracy is 0 (greater accuracy values
+  //   // mean more approximation)
+  //   if (segment.discontinuity) {
+  //     this.discontinuities[segment.timeline] = {
+  //       time: segment.start,
+  //       accuracy: 0
+  //     };
+  //   } else if (playlist.discontinuityStarts && playlist.discontinuityStarts.length) {
+  //     // Search for future discontinuities that we can provide better timing
+  //     // information for and save that information for sync purposes
+  //     for (let i = 0; i < playlist.discontinuityStarts.length; i++) {
+  //       const segmentIndex = playlist.discontinuityStarts[i];
+  //       const discontinuity = playlist.discontinuitySequence + i + 1;
+  //       const mediaIndexDiff = segmentIndex - segmentInfo.mediaIndex;
+  //       const accuracy = Math.abs(mediaIndexDiff);
 
-        if (!this.discontinuities[discontinuity] ||
-             this.discontinuities[discontinuity].accuracy > accuracy) {
-          let time;
+  //       if (!this.discontinuities[discontinuity] ||
+  //            this.discontinuities[discontinuity].accuracy > accuracy) {
+  //         let time;
 
-          if (mediaIndexDiff < 0) {
-            time = segment.start - sumDurations(
-              playlist,
-              segmentInfo.mediaIndex,
-              segmentIndex
-            );
-          } else {
-            time = segment.end + sumDurations(
-              playlist,
-              segmentInfo.mediaIndex + 1,
-              segmentIndex
-            );
-          }
+  //         if (mediaIndexDiff < 0) {
+  //           time = segment.start - sumDurations(
+  //             playlist,
+  //             segmentInfo.mediaIndex,
+  //             segmentIndex
+  //           );
+  //         } else {
+  //           time = segment.end + sumDurations(
+  //             playlist,
+  //             segmentInfo.mediaIndex + 1,
+  //             segmentIndex
+  //           );
+  //         }
 
-          this.discontinuities[discontinuity] = {
-            time,
-            accuracy
-          };
-        }
-      }
-    }
-  }
+  //         this.discontinuities[discontinuity] = {
+  //           time,
+  //           accuracy
+  //         };
+  //       }
+  //     }
+  //   }
+  //}
 }
